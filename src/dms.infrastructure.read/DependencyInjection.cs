@@ -27,7 +27,9 @@ public static class DependencyInjection
 
             if (env.IsEnvironment("Testing"))
             {
-                opt.UseInMemoryDatabase($"ReadDb-{Guid.NewGuid()}");
+                var cfg = sp.GetRequiredService<IConfiguration>();
+                var dbName = cfg["ReadDatabase:InMemoryName"] ?? "ReadDb-Tests";
+                opt.UseInMemoryDatabase(dbName);
             }
             else
             {

@@ -22,30 +22,41 @@ namespace DMS.Web.Test.Service.Auth;
 
 public class LoginPostTest : IClassFixture<AppFactory>
 {
+    private readonly AppFactory _factory;
     private readonly HttpClient _client;
 
     public LoginPostTest(AppFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
-
-        using var scope = factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ReadDbContext>();
-        db.Users.Add(new UserReadEntity() { Id = Guid.NewGuid(), Username = "john.doe", PasswordHash = $"{Guid.NewGuid()}"});
-        db.SaveChanges();
     }
 
     [Fact]
     public async Task Login_Incorrect_Credentials_Returns_Unauthorized()
     {
         // arrange
+        var dbName = $"readdb-{Guid.NewGuid()}";
+
+        using var factory = _factory.WithDb(dbName); 
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ReadDbContext>();
+            db.Database.EnsureCreated();
+            db.Users.Add(new UserReadEntity { Id = Guid.NewGuid(), Username = "john.doe", PasswordHash = "x" });
+            db.SaveChanges();
+        }
+
+
         var content = new StringContent(JsonSerializer.Serialize(new
         {
-            Username = "john.doe",
-            Password = "incorrect secret"
+            Username = "john.jr.doe",
+            Password = "secret"
         }), Encoding.UTF8, "application/json");
 
+        var client = factory.CreateClient();
+
         // act
-        var resp = await _client.PostAsync("/api/auth/login", content);
+        var resp = await client.PostAsync("/api/auth/login", content);
 
         // assert
         resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -62,7 +73,7 @@ public class LoginPostTest : IClassFixture<AppFactory>
         var content = new StringContent(JsonSerializer.Serialize(new
         {
             Username = "denis.dmitriev",
-            Password = "correct secret"
+            Password = "secret"
         }), Encoding.UTF8, "application/json");
 
         // act

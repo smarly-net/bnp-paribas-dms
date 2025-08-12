@@ -2,6 +2,7 @@
 using DMS.Application.Abstractions.Persistence.Read;
 using DMS.Infrastructure.Read;
 using DMS.Infrastructure.Read.Configuration;
+using DMS.Infrastructure.Read.Entities;
 using DMS.Infrastructure.Read.Repositories;
 
 using Microsoft.AspNetCore.Hosting;
@@ -15,25 +16,42 @@ namespace DMS.Web.Test.Service
 {
     public class AppFactory : WebApplicationFactory<Program>
     {
+        public const string SharedDbName = "ReadDb-Shared";
+        private static bool _seeded;
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            builder.UseEnvironment("Testing");
+
             builder.ConfigureAppConfiguration((context, config) =>
             {
                 var dict = new Dictionary<string, string?>
                 {
-                    ["ReadDatabase:ConnectionString"] = "Fake-Connection-String"
+                    ["ReadDatabase:ConnectionString"] = "Fake-Connection-String",
+                    ["ReadDatabase:InMemoryName"] = SharedDbName
                 };
                 config.AddInMemoryCollection(dict!);
             });
 
-            builder.UseEnvironment("Testing");
+            builder.ConfigureServices(services =>
+            {
+                using var sp = services.BuildServiceProvider();
+                using var scope = sp.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<ReadDbContext>();
+                db.Database.EnsureCreated();
 
-            //// 4) Инициализация/сидинг по желанию
-            //var sp = services.BuildServiceProvider();
-            //using var scope = sp.CreateScope();
-            //var db = scope.ServiceProvider.GetRequiredService<ReadDbContext>();
-            //db.Database.EnsureCreated();
-            //// Seed(db); // если нужно
+                if (!_seeded)
+                {
+                    db.Users.Add(new UserReadEntity
+                    {
+                        Id = Guid.NewGuid(),
+                        Username = "denis.dmitriev",
+                        PasswordHash = "hash"
+                    });
+                    db.SaveChanges();
+                    _seeded = true;
+                }
+            });
         }
 
     }
