@@ -1,8 +1,14 @@
+using DMS.Application;
+using DMS.Infrastructure.Read;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var builderServices = builder.Services;
 
-builder.Services.AddControllers();
+builderServices.AddHandlers();
+builderServices.AddReadInfrastructure(builder.Configuration);
+
+builderServices.AddControllers();
 
 var app = builder.Build();
 

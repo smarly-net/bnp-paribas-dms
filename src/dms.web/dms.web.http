@@ -1,6 +1,0 @@
-@dms.web_HostAddress = http://localhost:5032
-
-GET {{dms.web_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

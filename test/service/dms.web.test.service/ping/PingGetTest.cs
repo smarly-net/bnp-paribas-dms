@@ -1,13 +1,12 @@
 ﻿using FluentAssertions;
 
+using Microsoft.AspNetCore.Mvc;
+
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
 
 using Xunit;
 
-namespace dms.web.test.service.ping;
+namespace DMS.Web.Test.Service.Ping;
 
 public class PingGetTest : IClassFixture<AppFactory>
 {
@@ -19,14 +18,17 @@ public class PingGetTest : IClassFixture<AppFactory>
     }
 
     [Fact]
-    public async Task Ping_returns_pong()
+    public async Task Ping_Returns_Pong()
     {
-        var resp = await _client.GetAsync("/ping");
+        // arrange
+
+        // act
+        var resp = await _client.GetAsync("api/ping");
+
+        // assert
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseMessage = await resp.Content.ReadAsStringAsync();
         responseMessage.Should().Be("pong");
     }
-
-   // private record PingDto(string message);
 }

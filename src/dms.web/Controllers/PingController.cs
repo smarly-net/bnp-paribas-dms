@@ -1,10 +1,12 @@
+using DMS.Web.Controllers.Base;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace dms.web.Controllers
+namespace DMS.Web.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class PingController : ControllerBase
+    [Route("api/[controller]")]
+    public class PingController : AuthorizeControllerBase
     {
         private readonly ILogger<PingController> _logger;
 
@@ -14,6 +16,7 @@ namespace dms.web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Get()
         {
             _logger.LogInformation($"Method {nameof(PingController.Get)}");
