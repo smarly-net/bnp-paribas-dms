@@ -22,8 +22,4 @@
     <ProjectReference Include="..\dms.contracts\dms.contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Projections\" />
-  </ItemGroup>
-
 </Project>

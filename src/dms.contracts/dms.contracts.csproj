@@ -8,8 +8,4 @@
 		<RootNamespace>DMS.Contracts</RootNamespace>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Folder Include="Events\" />
-	</ItemGroup>
-
 </Project>

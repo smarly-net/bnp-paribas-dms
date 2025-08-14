@@ -1,4 +1,4 @@
-﻿using DMS.Application.Abstractions.Auth;
+﻿using DMS.Application.Abstractions.Auth.Services;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;

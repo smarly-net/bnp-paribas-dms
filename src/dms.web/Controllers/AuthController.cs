@@ -1,13 +1,13 @@
 ﻿using DMS.Application.Auth.Login;
-using DMS.Contracts.Auth;
+using DMS.Application.Auth.RefreshToken;
+using DMS.Contracts.Auth.Login;
+using DMS.Contracts.Auth.RefreshToken;
 using DMS.Contracts.Common;
-using DMS.Web.BackgroundServices;
 using DMS.Web.Controllers.Base;
 
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DMS.Web.Controllers
@@ -35,7 +35,8 @@ namespace DMS.Web.Controllers
                 return Unauthorized(new ErrorDto(result.Error!));
             }
 
-            return Ok(result.Data);
+            var responseDto = new LoginResponseDto(result.Data!.AccessToken, result.Data!.RefreshToken);
+            return Ok(responseDto);
         }
 
         [HttpPost]
@@ -49,7 +50,8 @@ namespace DMS.Web.Controllers
                 return Unauthorized(new ErrorDto(result.Error!));
             }
 
-            return Ok(result.Data);
+            var responseDto = new LoginResponseDto(result.Data!.AccessToken, result.Data!.RefreshToken);
+            return Ok(responseDto);
         }
     }
 }

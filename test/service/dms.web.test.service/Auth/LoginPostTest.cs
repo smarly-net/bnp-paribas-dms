@@ -1,20 +1,12 @@
-﻿using DMS.Application.Abstractions.Persistence.Read;
-using DMS.Application.Auth.Login;
-using DMS.Contracts.Auth;
-using DMS.Contracts.Common;
-using DMS.Infrastructure.Read;
-
+﻿using DMS.Contracts.Common;
 using FluentAssertions;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using DMS.Infrastructure.Read.Entities;
+using DMS.Contracts.Auth.Login;
+using DMS.Infrastructure.Write;
+using DMS.Infrastructure.Write.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -35,14 +27,14 @@ public class LoginPostTest : IClassFixture<AppFactory>
     public async Task Login_Incorrect_Credentials_Returns_Unauthorized()
     {
         // arrange
-        var dbName = $"readdb-{Guid.NewGuid()}";
+        var dbName = $"writedb-{Guid.NewGuid()}";
 
         using var factory = _factory.WithDb(dbName); 
         using (var scope = factory.Services.CreateScope())
         {
-            var db = scope.ServiceProvider.GetRequiredService<ReadDbContext>();
+            var db = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             db.Database.EnsureCreated();
-            db.Users.Add(new UserReadEntity { Id = Guid.NewGuid(), Username = "john.doe", PasswordHash = "x" });
+            db.Users.Add(new UserEntity { Id = Guid.NewGuid(), Username = "john.doe", PasswordHash = "x" });
             db.SaveChanges();
         }
 

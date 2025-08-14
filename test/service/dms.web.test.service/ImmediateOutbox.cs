@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 
 using DMS.Application.Abstractions.Outbox;
-using DMS.Application.Abstractions.Persistence.Read;
+using DMS.Application.Abstractions.Persistence.Write;
 
 namespace DMS.Web.Test.Service;
 
@@ -16,7 +16,6 @@ internal sealed class ImmediateOutbox : IOutbox
         return _projector.HandleAsync(env, ct);
     }
 
-    // если твой IOutbox содержит "ридер"-методы — делаем no-op:
     public Task<IReadOnlyList<OutboxEnvelope>> GetPendingAsync(int take, CancellationToken ct)
         => Task.FromResult<IReadOnlyList<OutboxEnvelope>>(Array.Empty<OutboxEnvelope>());
     public Task MarkProcessedAsync(Guid id, CancellationToken ct) => Task.CompletedTask;

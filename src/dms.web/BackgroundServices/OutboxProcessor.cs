@@ -1,5 +1,5 @@
 ﻿using DMS.Application.Abstractions.Outbox;
-using DMS.Application.Abstractions.Persistence.Read;
+using DMS.Application.Abstractions.Persistence.Write;
 
 namespace DMS.Web.BackgroundServices;
 
@@ -24,17 +24,24 @@ public class OutboxProcessor : BackgroundService
         {
             using var scope = _scopeFactory.CreateScope();
             var outbox = scope.ServiceProvider.GetRequiredService<IOutbox>();
-            //var projector = scope.ServiceProvider.GetRequiredService<IProjector>();
+            var projectors = scope.ServiceProvider.GetRequiredService<Dictionary<string, IProjector>>();
 
             var items = await outbox.GetPendingAsync(Batch, ct);
             if (items.Count == 0) continue;
 
-            foreach (var m in items)
+            foreach (OutboxEnvelope m in items)
             {
                 try
                 {
-                    //await projector.HandleAsync(m, ct);
-                    await outbox.MarkProcessedAsync(m.Id, ct);
+                    if (projectors.TryGetValue(m.Type, out var projector))
+                    {
+                        await projector.HandleAsync(m, ct);
+                        await outbox.MarkProcessedAsync(m.Id, ct);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("No projector registered for {Type}", m.Type);
+                    }
                 }
                 catch (Exception ex)
                 {

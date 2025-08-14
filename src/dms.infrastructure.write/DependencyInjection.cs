@@ -1,5 +1,5 @@
 using DMS.Application.Abstractions.Outbox;
-using DMS.Application.Abstractions.Persistence.Write;
+using DMS.Application.Abstractions.Repositories;
 using DMS.Infrastructure.Write.Configuration;
 using DMS.Infrastructure.Write.Repositories;
 
@@ -20,6 +20,10 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IRefreshTokenWriteRepository, RefreshTokenWriteRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IDocumentAccessRequestRepository, DocumentAccessRequestRepository>();
 
         #region Database
 

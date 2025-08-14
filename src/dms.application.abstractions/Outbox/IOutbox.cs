@@ -1,4 +1,4 @@
-﻿using DMS.Application.Abstractions.Persistence.Read;
+﻿using DMS.Application.Abstractions.Persistence.Write;
 
 namespace DMS.Application.Abstractions.Outbox;
 

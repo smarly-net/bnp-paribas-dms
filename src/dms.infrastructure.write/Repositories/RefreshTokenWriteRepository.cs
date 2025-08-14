@@ -1,4 +1,5 @@
 ﻿using DMS.Application.Abstractions.Persistence.Write;
+using DMS.Application.Abstractions.Repositories;
 using DMS.Infrastructure.Write.Entities;
 
 using Microsoft.EntityFrameworkCore;

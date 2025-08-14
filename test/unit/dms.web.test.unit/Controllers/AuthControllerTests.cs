@@ -1,5 +1,9 @@
-﻿using DMS.Application.Auth.Login;
+﻿using DMS.Application.Abstractions.Auth.Models;
+using DMS.Application.Abstractions.Persistence.Read;
+using DMS.Application.Auth.Login;
+using DMS.Application.Common;
 using DMS.Contracts.Auth;
+using DMS.Contracts.Auth.Login;
 using DMS.Contracts.Common;
 using DMS.Web.Controllers;
 
@@ -36,7 +40,7 @@ public class AuthControllerTests
         // arrange
         _mediatr
             .Setup(m => m.Send(It.IsAny<LoginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(LoginResult.Fail("Invalid username or password"));
+            .ReturnsAsync(Result<LoginToken>.Fail("Invalid username or password"));
 
         // act
         var result = await _controller.Login(new LoginRequestDto("john", "secret"), CancellationToken.None);
@@ -57,7 +61,7 @@ public class AuthControllerTests
         string refreshToken = "refreshToken value";
         _mediatr
             .Setup(m => m.Send(It.IsAny<LoginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(LoginResult.Ok(new LoginResponseDto(accessToken, refreshToken)));
+            .ReturnsAsync(Result<LoginToken>.Ok(new LoginToken(accessToken, refreshToken)));
 
         // act
         var result = await _controller.Login(new LoginRequestDto("john", "secret"), CancellationToken.None);

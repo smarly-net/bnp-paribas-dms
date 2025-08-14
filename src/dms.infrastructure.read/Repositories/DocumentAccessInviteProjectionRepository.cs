@@ -1,0 +1,32 @@
+﻿using DMS.Application.Abstractions.Repositories;
+using DMS.Infrastructure.Read.Entities;
+
+using Microsoft.EntityFrameworkCore;
+
+namespace DMS.Infrastructure.Read.Repositories;
+
+public sealed class DocumentAccessInviteProjectionRepository : IDocumentAccessInviteProjectionRepository
+{
+    private readonly ReadDbContext _db;
+    public DocumentAccessInviteProjectionRepository(ReadDbContext db) => _db = db;
+
+    public async Task ProjectAsync(Guid userId, Guid documentId, string token, DateTime expiresAtUtc, CancellationToken ct)
+    {
+        var exists = await _db.Set<DocumentAccessInviteReadEntity>()
+            .AsNoTracking()
+            .AnyAsync(x => x.Token == token, ct);
+        if (exists) return;
+
+        var row = new DocumentAccessInviteReadEntity
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            DocumentId = documentId,
+            Token = token,
+            ExpiresAtUtc = expiresAtUtc
+        };
+
+        _db.Set<DocumentAccessInviteReadEntity>().Add(row);
+        await _db.SaveChangesAsync(ct);
+    }
+}

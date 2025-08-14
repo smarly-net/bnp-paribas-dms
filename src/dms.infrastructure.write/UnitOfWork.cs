@@ -1,4 +1,4 @@
-﻿using DMS.Application.Abstractions.Persistence.Write;
+﻿using DMS.Application.Abstractions.Repositories;
 
 namespace DMS.Infrastructure.Write;
 

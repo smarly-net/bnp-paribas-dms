@@ -5,4 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: SuppressMessage("Style", "IDE0079:Remove unnecessary suppression")]
+
 [assembly: SuppressMessage("Style", "IDE0290:Use primary constructor")]
+[assembly: SuppressMessage("Style", "IDE0028:Collection initialization can be simplified")]

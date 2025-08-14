@@ -1,5 +1,6 @@
-using DMS.Application.Abstractions.Auth;
+using DMS.Application.Abstractions.Auth.Services;
 using DMS.Infrastructure.Auth;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DMS.Infrastructure;

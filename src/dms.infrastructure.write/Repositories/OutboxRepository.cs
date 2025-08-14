@@ -1,5 +1,5 @@
 ﻿using DMS.Application.Abstractions.Outbox;
-using DMS.Application.Abstractions.Persistence.Read;
+using DMS.Application.Abstractions.Persistence.Write;
 using DMS.Infrastructure.Write.Entities;
 
 using Microsoft.EntityFrameworkCore;

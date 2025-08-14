@@ -1,5 +1,5 @@
 using DMS.Application;
-using DMS.Application.Abstractions.Auth;
+using DMS.Application.Abstractions.Auth.Services;
 using DMS.Infrastructure;
 using DMS.Infrastructure.Read;
 using DMS.Infrastructure.Write;

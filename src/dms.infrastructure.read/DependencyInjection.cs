@@ -1,7 +1,9 @@
-using DMS.Application.Abstractions.Persistence.Read;
+using DMS.Application.Abstractions.Outbox;
+using DMS.Application.Abstractions.Repositories;
+using DMS.Contracts.Events;
 using DMS.Infrastructure.Read.Configuration;
+using DMS.Infrastructure.Read.Projections;
 using DMS.Infrastructure.Read.Repositories;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +16,15 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddReadInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IUserReadRepository, UserReadRepository>();
+        services.AddScoped<IDocumentAccessInviteProjectionRepository, DocumentAccessInviteProjectionRepository>();
+
+
+        services.AddScoped<AccessInviteIssuedProjector>();
+
+        services.AddScoped<Dictionary<string, IProjector>>(sp => new()
+        {
+            [nameof(AccessInviteIssuedEvent)] = sp.GetRequiredService<AccessInviteIssuedProjector>()
+        });
 
         #region Database
 

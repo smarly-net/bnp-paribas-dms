@@ -1,20 +1,15 @@
 ﻿
 using DMS.Application.Abstractions.Outbox;
-using DMS.Application.Abstractions.Persistence.Read;
-using DMS.Infrastructure.Read;
-using DMS.Infrastructure.Read.Configuration;
-using DMS.Infrastructure.Read.Entities;
-using DMS.Infrastructure.Read.Repositories;
+using DMS.Infrastructure.Write;
+using DMS.Infrastructure.Write.Entities;
 using DMS.Web.BackgroundServices;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace DMS.Web.Test.Service
 {
@@ -44,12 +39,12 @@ namespace DMS.Web.Test.Service
             {
                 using var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<ReadDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
                 db.Database.EnsureCreated();
 
                 if (!_seeded)
                 {
-                    db.Users.Add(new UserReadEntity
+                    db.Users.Add(new UserEntity
                     {
                         Id = Guid.NewGuid(),
                         Username = "denis.dmitriev",
@@ -65,7 +60,6 @@ namespace DMS.Web.Test.Service
                     d.ImplementationType == typeof(OutboxProcessor));
                 if (hosted is not null) services.Remove(hosted);
 
-                // 2) Подменить IOutbox -> ImmediateOutbox
                 services.RemoveAll<IOutbox>();
                 services.AddSingleton<IOutbox, ImmediateOutbox>();
             });
