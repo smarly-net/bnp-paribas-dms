@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace DMS.Contracts.Auth;
 
-public sealed record LoginResponseDto(Guid UserId, string Username);
+public sealed record LoginResponseDto(string AccessToken, string RefreshToken);

@@ -19,13 +19,13 @@ namespace DMS.Web.Test.Unit.Controllers;
 
 public class AuthControllerTests
 {
-    private readonly Mock<ILogger<AuthController>> _loggerMock;
+    private readonly Mock<ILoggerFactory> _loggerMock;
     private readonly AuthController _controller;
     private readonly Mock<IMediator> _mediatr;
 
     public AuthControllerTests()
     {
-        _loggerMock = new Mock<ILogger<AuthController>>();
+        _loggerMock = new Mock<ILoggerFactory>();
         _mediatr = new Mock<IMediator>();
         _controller = new AuthController(_loggerMock.Object, _mediatr.Object);
     }
@@ -53,11 +53,11 @@ public class AuthControllerTests
     public async Task Login_Should_Return_200_When_Correct()
     {
         // arrange
-        Guid userId = Guid.NewGuid();
-        string userName = "Person";
+        string accessToken = "accessToken value";
+        string refreshToken = "refreshToken value";
         _mediatr
             .Setup(m => m.Send(It.IsAny<LoginCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(LoginResult.Ok(new LoginResponseDto(userId, userName)));
+            .ReturnsAsync(LoginResult.Ok(new LoginResponseDto(accessToken, refreshToken)));
 
         // act
         var result = await _controller.Login(new LoginRequestDto("john", "secret"), CancellationToken.None);
@@ -68,8 +68,8 @@ public class AuthControllerTests
 
         var resultDto = (LoginResponseDto)objectResult.Value;
 
-        Assert.Equal(userId, resultDto.UserId);
-        Assert.Equal(userName, resultDto.Username);
+        Assert.Equal(accessToken, resultDto.AccessToken);
+        Assert.Equal(refreshToken, resultDto.RefreshToken);
     }
 
 }

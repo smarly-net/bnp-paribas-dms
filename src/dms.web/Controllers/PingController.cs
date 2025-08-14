@@ -1,3 +1,4 @@
+using DMS.Web.BackgroundServices;
 using DMS.Web.Controllers.Base;
 
 using Microsoft.AspNetCore.Authorization;
@@ -10,16 +11,15 @@ namespace DMS.Web.Controllers
     {
         private readonly ILogger<PingController> _logger;
 
-        public PingController(ILogger<PingController> logger)
+        public PingController(ILoggerFactory factory)
         {
-            _logger = logger;
+            _logger = factory.CreateLogger<PingController>();
         }
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Get()
         {
-            _logger.LogInformation($"Method {nameof(PingController.Get)}");
             return Ok("pong");
         }
     }

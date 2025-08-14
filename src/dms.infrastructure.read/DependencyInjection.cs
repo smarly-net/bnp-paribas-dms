@@ -1,6 +1,7 @@
 using DMS.Application.Abstractions.Persistence.Read;
 using DMS.Infrastructure.Read.Configuration;
 using DMS.Infrastructure.Read.Repositories;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddReadInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<IUserReadRepository, UserReadRepository>();
+
+        #region Database
+
         const string sectionName = "ReadDatabase";
 
         services.AddOptions<ReadDbOptions>()
@@ -33,12 +38,14 @@ public static class DependencyInjection
             }
             else
             {
-                var db = sp.GetRequiredService<IOptions<ReadDbOptions>>().Value;
-                opt.UseSqlite(db.ConnectionString);
+                var options = sp.GetRequiredService<IOptions<ReadDbOptions>>().Value;
+                var fullPath = Path.GetFullPath(options.ConnectionString.Replace("Data Source=", "").Trim(), Environment.CurrentDirectory);
+                var connString = $"Data Source={fullPath}";
+                opt.UseSqlite(connString);
             }
-        }); 
+        });
 
-        services.AddScoped<IUserReadRepository, UserReadRepository>();
+        #endregion
 
         return services;
     }

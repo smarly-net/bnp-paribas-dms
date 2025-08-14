@@ -1,6 +1,7 @@
 ﻿using DMS.Application.Auth.Login;
 using DMS.Contracts.Auth;
 using DMS.Contracts.Common;
+using DMS.Web.BackgroundServices;
 using DMS.Web.Controllers.Base;
 
 using MediatR;
@@ -17,9 +18,9 @@ namespace DMS.Web.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly IMediator _mediator;
 
-        public AuthController(ILogger<AuthController> logger, IMediator mediator)
+        public AuthController(ILoggerFactory factory, IMediator mediator)
         {
-            _logger = logger;
+            _logger = factory.CreateLogger<AuthController>();
             _mediator = mediator;
         }
 
@@ -31,7 +32,21 @@ namespace DMS.Web.Controllers
             var result = await _mediator.Send(new LoginCommand(dto.Username, dto.Password), ct);
             if (!result.Success)
             {
-                return Unauthorized(new ErrorDto(result.Error ?? "Invalid username or password"));
+                return Unauthorized(new ErrorDto(result.Error!));
+            }
+
+            return Ok(result.Data);
+        }
+
+        [HttpPost]
+        [Route("refresh")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto dto, CancellationToken ct)
+        {
+            var result = await _mediator.Send(new RefreshTokenCommand(dto.RefreshToken, dto.LastAccessToken), ct);
+            if (!result.Success)
+            {
+                return Unauthorized(new ErrorDto(result.Error!));
             }
 
             return Ok(result.Data);

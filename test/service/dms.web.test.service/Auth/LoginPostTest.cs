@@ -46,7 +46,6 @@ public class LoginPostTest : IClassFixture<AppFactory>
             db.SaveChanges();
         }
 
-
         var content = new StringContent(JsonSerializer.Serialize(new
         {
             Username = "john.jr.doe",
@@ -82,8 +81,10 @@ public class LoginPostTest : IClassFixture<AppFactory>
         // assert
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var dto = await resp.Content.ReadFromJsonAsync<LoginRequestDto>();
+        var dto = await resp.Content.ReadFromJsonAsync<LoginResponseDto>();
         dto.Should().NotBeNull();
-        dto!.Username.Should().Be("denis.dmitriev");
+
+        dto!.AccessToken.Should().NotBeNullOrWhiteSpace();
+        dto!.RefreshToken.Should().NotBeNullOrWhiteSpace();
     }
 }

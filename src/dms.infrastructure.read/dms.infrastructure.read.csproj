@@ -19,6 +19,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\dms.application.abstractions\dms.application.abstractions.csproj" />
+    <ProjectReference Include="..\dms.contracts\dms.contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Projections\" />
   </ItemGroup>
 
 </Project>

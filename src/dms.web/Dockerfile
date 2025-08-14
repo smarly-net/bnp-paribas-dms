@@ -20,6 +20,7 @@ COPY ["./src/dms.domain/dms.domain.csproj", "./src/dms.domain/"]
 COPY ["./src/dms.contracts/dms.contracts.csproj", "./src/dms.contracts/"]
 COPY ["./src/dms.application.abstractions/dms.application.abstractions.csproj", "./src/dms.application.abstractions/"]
 COPY ["./src/dms.application/dms.application.csproj", "./src/dms.application/"]
+COPY ["./src/dms.infrastructure/dms.infrastructure.csproj", "./src/dms.infrastructure/"]
 COPY ["./src/dms.infrastructure.read/dms.infrastructure.read.csproj", "./src/dms.infrastructure.read/"]
 COPY ["./src/dms.infrastructure.write/dms.infrastructure.write.csproj", "./src/dms.infrastructure.write/"]
 COPY ["./src/dms.web/dms.web.csproj", "./src/dms.web/"]
@@ -42,8 +43,9 @@ FROM base AS final
 WORKDIR /app
 
 ENV ReadDatabase__ConnectionString="Data Source=/app/db/readDb.sqlite"
+ENV WriteDatabase__ConnectionString="Data Source=/app/db/writeDb.sqlite"
 RUN mkdir -p /app/db
-COPY ["./db/readDb.sqlite", "/app/db/readDb.sqlite"]
+COPY ["./db/", "/app/db/"]
 
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "dms.web.dll"]
