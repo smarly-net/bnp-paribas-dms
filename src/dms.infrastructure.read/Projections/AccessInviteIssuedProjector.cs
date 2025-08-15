@@ -8,8 +8,8 @@ namespace DMS.Infrastructure.Read.Projections;
 
 public sealed class AccessInviteIssuedProjector : IProjector
 {
-    private readonly IDocumentAccessInviteProjectionRepository _repo;
-    public AccessInviteIssuedProjector(IDocumentAccessInviteProjectionRepository repo) => _repo = repo;
+    private readonly IDocumentAccessInviteRepository _repo;
+    public AccessInviteIssuedProjector(IDocumentAccessInviteRepository repo) => _repo = repo;
 
     public async Task HandleAsync(OutboxEnvelope evt, CancellationToken ct)
     {

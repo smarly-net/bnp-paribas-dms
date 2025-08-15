@@ -17,4 +17,6 @@ public class DocumentAccessUserRequestReadEntity
     public string? DecisionUserName { get; set; }
     public string? DecisionComment { get; set; }
     public DateTime? DecisionDate { get; set; }
+
+    public DocumentAccessInviteReadEntity Invite { get; set; } = default!;
 }

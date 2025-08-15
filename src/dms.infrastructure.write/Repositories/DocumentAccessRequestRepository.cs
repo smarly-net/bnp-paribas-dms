@@ -83,7 +83,7 @@ public sealed class DocumentAccessRequestRepository : IDocumentAccessRequestRepo
 
         e.AccessReason = reason;
         e.AccessType = accessType;
-        e.ExpiredAt = submittedDate;
+        e.SubmittedDate = submittedDate;
 
         return true;
     }

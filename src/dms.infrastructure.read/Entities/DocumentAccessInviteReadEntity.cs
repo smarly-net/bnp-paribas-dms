@@ -7,4 +7,6 @@ public sealed class DocumentAccessInviteReadEntity
     public Guid DocumentId { get; set; }
     public string Token { get; set; } = default!;
     public DateTime ExpiresAtUtc { get; set; }
+
+    public ICollection<DocumentAccessUserRequestReadEntity> UserRequests { get; set; } = new List<DocumentAccessUserRequestReadEntity>();
 }

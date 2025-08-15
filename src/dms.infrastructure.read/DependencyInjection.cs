@@ -16,7 +16,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddReadInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IDocumentAccessInviteProjectionRepository, DocumentAccessInviteProjectionRepository>();
+        services.AddScoped<IDocumentAccessInviteRepository, DocumentAccessInviteRepository>();
         services.AddScoped<IDocumentAccessUserRequestRepository, DocumentAccessUserRequestRepository>();
 
 

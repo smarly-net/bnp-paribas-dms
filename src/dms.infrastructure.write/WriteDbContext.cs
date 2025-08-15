@@ -138,17 +138,19 @@ public sealed class WriteDbContext : DbContext
             e.HasIndex(x => x.RequestToken)
                 .IsUnique();
 
+            e.Property(x => x.ExpiredAt)
+                .IsRequired();
+
             e.Property(x => x.AccessType)
                 .HasConversion<int?>();
 
             e.Property(x => x.AccessReason)
                 .HasMaxLength(1000);
 
-            e.Property(x => x.ExpiredAt)
-                .IsRequired();
-
             e.Property(x => x.DocumentId)
                 .IsRequired();
+
+            e.Property(x => x.SubmittedDate);
 
             e.HasIndex(x => x.UserId);
             e.HasIndex(x => x.DocumentId);

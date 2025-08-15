@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using System.Security.Claims;
+using DMS.Application.DocumentAccesses.Invites;
+using DMS.Contracts.DocumentAccesses.Invites;
 
 namespace DMS.Web.Controllers
 {
@@ -88,6 +90,36 @@ namespace DMS.Web.Controllers
             }
 
             return StatusCode(StatusCodes.Status201Created, result.Data);
+        }
+
+        [HttpGet("invites")]
+        public async Task<IActionResult> Invites([FromQuery] bool includeExpired = false, CancellationToken ct = default)
+        {
+            var userIdStr = User.FindFirstValue("uid");
+            if (string.IsNullOrWhiteSpace(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized(new ErrorDto("Invalid user identity."));
+
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToArray();
+
+            var result = await _mediator.Send(new ListInvitesQuery(userId, roles, includeExpired), ct);
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorDto(result.Error!));
+            }
+
+            var dto = result.Data!
+                .Select(x => new MyInviteItemResponseDto(
+                    x.InviteId,
+                    x.DocumentId,
+                    x.UserId,
+                    x.Token,
+                    x.ExpiresAtUtc))
+                .ToArray();
+
+            return Ok(dto);
         }
     }
 }

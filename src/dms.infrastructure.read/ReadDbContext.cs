@@ -43,8 +43,8 @@ public sealed class ReadDbContext : DbContext
 
             e.HasKey(x => x.InviteId);
 
-            e.HasOne<DocumentAccessInviteReadEntity>()
-                .WithMany()
+            e.HasOne(x => x.Invite)
+                .WithMany(i => i.UserRequests)
                 .HasForeignKey(x => x.InviteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
