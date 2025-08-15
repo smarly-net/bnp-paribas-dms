@@ -1,4 +1,4 @@
-﻿using DMS.Domain.Documents;
+﻿using DMS.Domain.DocumentAccesses;
 
 namespace DMS.Infrastructure.Write.Entities;
 

@@ -2,9 +2,10 @@
 using DMS.Application.Abstractions.Repositories;
 using DMS.Application.Common;
 using DMS.Contracts.Events;
+
 using MediatR;
 
-namespace DMS.Application.Documents.RequestAccess;
+namespace DMS.Application.DocumentAccesses.RequestAccess;
 
 public sealed class SubmitAccessRequestCommandHandler
     : IRequestHandler<SubmitAccessRequestCommand, Result<Guid>>
@@ -51,21 +52,12 @@ public sealed class SubmitAccessRequestCommandHandler
 
         var submittedDate = DateTime.UtcNow;
 
-        var r = await _accessRequestRepository.ApplyUserRequestAsync(invite.Id, request.Reason, request.AccessType, submittedDate, ct);
+        var resultOfApplying = await _accessRequestRepository.ApplyUserRequestAsync(invite.Id, request.Reason, request.AccessType, submittedDate, ct);
 
-        if (r)
+        if (resultOfApplying)
         {
             await _outbox.EnqueueAsync(
-                new AccessRequestSubmittedEvent(
-                    InviteId: invite.Id,
-                    UserId: request.UserId,
-                    DocumentId: doc.Id,
-                    DocumentTitle: doc.Title,
-                    Reason: request.Reason,
-                    AccessType: request.AccessType,
-                    SubmittedAtUtc: submittedDate
-                ),
-                ct);
+                new AccessRequestSubmittedEvent(invite.Id, request.UserId, user.Username, doc.Id, doc.Title, request.Reason, request.AccessType, submittedDate, null, null, null, null), ct);
 
             await _unitOfWork.Commit(ct);
         }

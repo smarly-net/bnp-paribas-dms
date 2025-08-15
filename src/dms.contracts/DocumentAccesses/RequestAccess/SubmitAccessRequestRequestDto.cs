@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DMS.Domain.Documents;
+using DMS.Domain.DocumentAccesses;
 
-namespace DMS.Contracts.Documents.RequestAccess;
+namespace DMS.Contracts.DocumentAccesses.RequestAccess;
 
 public sealed record SubmitAccessRequestRequestDto(
     string Token,

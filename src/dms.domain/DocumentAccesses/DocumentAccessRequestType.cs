@@ -1,4 +1,4 @@
-﻿namespace DMS.Domain.Documents;
+﻿namespace DMS.Domain.DocumentAccesses;
 
 public enum DocumentAccessRequestType
 {

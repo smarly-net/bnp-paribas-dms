@@ -4,7 +4,7 @@ using DMS.Application.Abstractions.Repositories;
 using DMS.Contracts.Events;
 
 using System.Text.Json;
-using DMS.Domain.Documents;
+using DMS.Domain.DocumentAccesses;
 
 namespace DMS.Infrastructure.Read.Projections;
 
@@ -21,6 +21,6 @@ public sealed class AccessRequestSubmittedProjector : IProjector
             throw new InvalidOperationException("Payload deserialization failed.");
         }
 
-        await _repo.ApplyUserRequestAsync(payload.InviteId, payload.UserId, payload.DocumentId, payload.DocumentTitle, payload.Reason, payload.AccessType, payload.SubmittedAtUtc, DocumentRequestDecisionStatus.Pending, ct);
+        await _repo.ApplyUserRequestAsync(payload.InviteId, payload.UserId, payload.UserName, payload.DocumentId, payload.DocumentTitle, payload.Reason, payload.AccessType, payload.SubmittedAtUtc, DocumentRequestDecisionStatus.Pending, payload.DecisionUserId, payload.DecisionUserName, payload.DecisionComment, payload.DecisionDate, ct);
     }
 }

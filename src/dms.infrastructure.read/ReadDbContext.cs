@@ -49,6 +49,11 @@ public sealed class ReadDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             e.Property(x => x.UserId).IsRequired();
+
+            e.Property(x => x.UserName)
+                .IsRequired()
+                .HasMaxLength(128);
+
             e.Property(x => x.DocumentId).IsRequired();
 
             e.Property(x => x.DocumentTitle)
@@ -69,7 +74,11 @@ public sealed class ReadDbContext : DbContext
                 .HasConversion<int>()     
                 .IsRequired();
 
-            e.Property(x => x.DecisionUserId);   
+            e.Property(x => x.DecisionUserId);
+
+            e.Property(x => x.DecisionUserName)
+                .HasMaxLength(128);
+
             e.Property(x => x.DecisionComment)
                 .HasMaxLength(1000);
             e.Property(x => x.DecisionDate);    

@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using DMS.Application.Abstractions.Persistence.Write;
 using DMS.Contracts.Events;
 
-namespace DMS.Application.Documents.IssueAccessInvite;
+namespace DMS.Application.DocumentAccesses.IssueAccessInvite;
 
 public sealed class IssueAccessInviteCommandHandler
     : IRequestHandler<IssueAccessInviteCommand, Result<AccessInvite>>

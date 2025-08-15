@@ -1,5 +1,5 @@
 ﻿using DMS.Application.Abstractions.Persistence.Write;
-using DMS.Domain.Documents;
+using DMS.Domain.DocumentAccesses;
 
 namespace DMS.Application.Abstractions.Repositories;
 

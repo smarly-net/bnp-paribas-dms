@@ -1,4 +1,4 @@
-﻿using DMS.Domain.Documents;
+﻿using DMS.Domain.DocumentAccesses;
 
 namespace DMS.Infrastructure.Read.Entities;
 
@@ -6,6 +6,7 @@ public class DocumentAccessUserRequestReadEntity
 {
     public Guid InviteId { get; set; }
     public Guid UserId { get; set; }
+    public string UserName { get; set; } = default!;
     public Guid DocumentId { get; set; }
     public string DocumentTitle { get; set; } = default!;
     public string? Reason { get; set; } = default!;
@@ -13,6 +14,7 @@ public class DocumentAccessUserRequestReadEntity
     public DateTime RequestDate { get; set; }
     public DocumentRequestDecisionStatus DecisionStatus { get; set; }
     public Guid? DecisionUserId { get; set; }
+    public string? DecisionUserName { get; set; }
     public string? DecisionComment { get; set; }
     public DateTime? DecisionDate { get; set; }
 }
