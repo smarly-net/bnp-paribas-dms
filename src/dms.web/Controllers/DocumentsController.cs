@@ -1,8 +1,12 @@
-﻿using DMS.Application.Documents.IssueAccessInvite;
+﻿using System.Security.Claims;
+using DMS.Application.Documents.IssueAccessInvite;
 using DMS.Application.Documents.List;
+using DMS.Application.Documents.RequestAccess;
 using DMS.Contracts.Common;
-using DMS.Contracts.Documents.Invite;
+using DMS.Contracts.Documents.IssueAccessInvite;
 using DMS.Contracts.Documents.List;
+using DMS.Contracts.Documents.RequestAccess;
+using DMS.Infrastructure.Write.Entities;
 using DMS.Web.Controllers.Base;
 using MediatR;
 
@@ -12,7 +16,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace DMS.Web.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
     public sealed class DocumentsController : AuthorizeControllerBase
     {
         private readonly ILogger<DocumentsController> _logger;
@@ -25,6 +28,7 @@ namespace DMS.Web.Controllers
         }
 
         [HttpGet("get-list")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetList(CancellationToken ct)
         {
             var result = await _mediator.Send(new ListDocumentsQuery(), ct);
@@ -39,6 +43,7 @@ namespace DMS.Web.Controllers
         }
 
         [HttpPost("{documentId:guid}/issue-access-invite")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> IssueAccessInvite(Guid documentId, [FromBody] IssueAccessInviteRequestDto dto, CancellationToken ct)
         {
             var result = await _mediator.Send(
@@ -53,6 +58,21 @@ namespace DMS.Web.Controllers
             return StatusCode(StatusCodes.Status201Created, new IssueAccessInviteResponseDto(appModel.Token, appModel.ExpiresAtUtc));
         }
 
-        //[Authorize] 
+        [HttpPost("request-access")]
+        public async Task<IActionResult> RequestAccess([FromBody] SubmitAccessRequestRequestDto dto, CancellationToken ct)
+        {
+            var userIdStr = User.FindFirstValue("uid");
+            if (string.IsNullOrWhiteSpace(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized(new ErrorDto("Invalid user identity."));
+
+            var result = await _mediator.Send(new SubmitAccessRequestCommand(userId, dto.Token, dto.Reason, dto.Type), ct);
+
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorDto(result.Error!));
+            }
+
+            return StatusCode(StatusCodes.Status201Created, result.Data);
+        }
     }
 }

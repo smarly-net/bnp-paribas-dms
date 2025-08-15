@@ -9,3 +9,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0290:Use primary constructor")]
 [assembly: SuppressMessage("Style", "IDE0028:Collection initialization can be simplified")]
+[assembly: SuppressMessage("Style", "IDE0270:Null check can be simplified")]

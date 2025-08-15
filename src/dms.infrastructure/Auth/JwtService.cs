@@ -16,12 +16,13 @@ public sealed class JwtService : IJwtService
 
     public JwtService(IOptions<JwtSettings> settings) => _settings = settings.Value;
 
-    public string Generate(string username, IEnumerable<string> roles)
+    public string Generate(Guid userId, string username, IEnumerable<string> roles)
     {
         var now = DateTime.UtcNow;
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, username),
+            new("uid", userId.ToString()),
             new(ClaimTypes.Name, username),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)

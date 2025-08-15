@@ -68,7 +68,7 @@ public sealed class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, R
             return Result<LoginToken>.Fail("User not found");
         }
 
-        var newAccess = _jwtService.Generate(user.Username, user.Roles);
+        var newAccess = _jwtService.Generate(user.Id, user.Username, user.Roles);
         var newAccessJti = _jwtService.GetJti(newAccess);
 
         var newRefresh = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));

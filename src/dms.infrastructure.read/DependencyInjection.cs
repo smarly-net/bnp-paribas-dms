@@ -17,13 +17,16 @@ public static class DependencyInjection
     public static IServiceCollection AddReadInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IDocumentAccessInviteProjectionRepository, DocumentAccessInviteProjectionRepository>();
+        services.AddScoped<IDocumentAccessUserRequestRepository, DocumentAccessUserRequestRepository>();
 
 
         services.AddScoped<AccessInviteIssuedProjector>();
+        services.AddScoped<AccessRequestSubmittedProjector>();
 
         services.AddScoped<Dictionary<string, IProjector>>(sp => new()
         {
-            [nameof(AccessInviteIssuedEvent)] = sp.GetRequiredService<AccessInviteIssuedProjector>()
+            [nameof(AccessInviteIssuedEvent)] = sp.GetRequiredService<AccessInviteIssuedProjector>(),
+            [nameof(AccessRequestSubmittedEvent)] = sp.GetRequiredService<AccessRequestSubmittedProjector>(),
         });
 
         #region Database

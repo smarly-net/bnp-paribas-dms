@@ -1,7 +1,6 @@
 ﻿using DMS.Application.Abstractions.Outbox;
 using DMS.Application.Abstractions.Repositories;
 using DMS.Application.Common;
-using DMS.Contracts.Documents.Invite;
 using MediatR;
 
 using System.Security.Cryptography;
@@ -11,7 +10,7 @@ using DMS.Contracts.Events;
 namespace DMS.Application.Documents.IssueAccessInvite;
 
 public sealed class IssueAccessInviteCommandHandler
-    : IRequestHandler<IssueAccessInviteCommand, Result<IssueAccessInviteResponseDto>>
+    : IRequestHandler<IssueAccessInviteCommand, Result<AccessInvite>>
 {
     private readonly IDocumentRepository _documentRepository;
     private readonly IUserRepository _userRepository;
@@ -33,30 +32,37 @@ public sealed class IssueAccessInviteCommandHandler
         _outbox = outbox;
     }
 
-    public async Task<Result<IssueAccessInviteResponseDto>> Handle(IssueAccessInviteCommand request, CancellationToken ct)
+    public async Task<Result<AccessInvite>> Handle(IssueAccessInviteCommand request, CancellationToken ct)
     {
         var docExists = await _documentRepository.GetByIdAsync(request.DocumentId, ct);
         if (docExists == null)
         {
-            return Result<IssueAccessInviteResponseDto>.Fail("Document not found.");
+            return Result<AccessInvite>.Fail("Document not found.");
         }
 
         var userExists = await _userRepository.GetByIdAsync(request.UserId, ct);
         if (userExists == null)
         {
-            return Result<IssueAccessInviteResponseDto>.Fail("User not found.");
+            return Result<AccessInvite>.Fail("User not found.");
+        }
+
+        AccessInvite? existingInvite = await _documentAccessRequestRepository.GetActiveInviteAsync(request.UserId, request.DocumentId, ct);
+
+        if (existingInvite is not null)
+        {
+            return Result<AccessInvite>.Ok(new AccessInvite(existingInvite.Id, request.UserId, request.DocumentId, existingInvite.Token, existingInvite.ExpiresAtUtc));
         }
 
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 
         var expriresAtUtc = request.ExpiresAtUtc ?? DateTime.UtcNow.AddDays(7);
 
-        await _documentAccessRequestRepository.IssueAccessInvite(new AccessInvite(request.UserId, request.DocumentId, token, expriresAtUtc), ct: ct);
-        await _outbox.EnqueueAsync(new AccessInviteIssuedEvent(request.UserId, request.DocumentId, token, expriresAtUtc), ct);
+        var accessInviteId = await _documentAccessRequestRepository.IssueAccessInvite(new AccessInvite(Guid.Empty, request.UserId, request.DocumentId, token, expriresAtUtc), ct: ct);
+        await _outbox.EnqueueAsync(new AccessInviteIssuedEvent(accessInviteId, request.UserId, request.DocumentId, token, expriresAtUtc), ct);
 
         await _unitOfWork.Commit(ct);
 
-        return Result<IssueAccessInviteResponseDto>.Ok(new IssueAccessInviteResponseDto(token, expriresAtUtc));
+        return Result<AccessInvite>.Ok(new AccessInvite(accessInviteId, request.UserId, request.DocumentId, token, expriresAtUtc));
     }
 
 }

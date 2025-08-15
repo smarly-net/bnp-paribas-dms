@@ -53,12 +53,12 @@ public sealed class WriteDbContext : DbContext
             e.HasOne(x => x.User)
                 .WithMany(u => u.UserRoles)
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             e.HasOne(x => x.Role)
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(x => x.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         //Documents
@@ -193,21 +193,21 @@ public sealed class WriteDbContext : DbContext
             e.HasData(new UserEntity
             {
                 Id = dmitrievAdminUserId,
-                Username = "dmitriev.denis",
+                Username = "dmitriev.denis.admin",
                 PasswordHash = "PLACEHOLDER_HASH1"
             });
 
             e.HasData(new UserEntity
             {
                 Id = adamsApproverUserId,
-                Username = "adams.brown",
+                Username = "adams.brown.approver",
                 PasswordHash = "PLACEHOLDER_HASH2"
             });
 
             e.HasData(new UserEntity
             {
                 Id = allenUserUserId,
-                Username = "allen.smith",
+                Username = "allen.smith.user",
                 PasswordHash = "PLACEHOLDER_HASH3"
             });
         });

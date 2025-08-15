@@ -10,23 +10,26 @@ public sealed class DocumentAccessInviteProjectionRepository : IDocumentAccessIn
     private readonly ReadDbContext _db;
     public DocumentAccessInviteProjectionRepository(ReadDbContext db) => _db = db;
 
-    public async Task ProjectAsync(Guid userId, Guid documentId, string token, DateTime expiresAtUtc, CancellationToken ct)
+    public async Task ProjectAsync(Guid inviteId, Guid userId, Guid documentId, string token, DateTime expiresAtUtc, CancellationToken ct)
     {
-        var exists = await _db.Set<DocumentAccessInviteReadEntity>()
+        var exists = await _db.DocumentAccessInvites
             .AsNoTracking()
             .AnyAsync(x => x.Token == token, ct);
-        if (exists) return;
+        if (exists)
+        {
+            return;
+        }
 
         var row = new DocumentAccessInviteReadEntity
         {
-            Id = Guid.NewGuid(),
+            Id = inviteId,
             UserId = userId,
             DocumentId = documentId,
             Token = token,
             ExpiresAtUtc = expiresAtUtc
         };
 
-        _db.Set<DocumentAccessInviteReadEntity>().Add(row);
+        _db.DocumentAccessInvites.Add(row);
         await _db.SaveChangesAsync(ct);
     }
 }

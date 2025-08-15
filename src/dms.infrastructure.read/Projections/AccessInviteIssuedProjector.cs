@@ -19,6 +19,6 @@ public sealed class AccessInviteIssuedProjector : IProjector
             throw new InvalidOperationException("Payload deserialization failed.");
         }
 
-        await _repo.ProjectAsync(payload.UserId, payload.DocumentId, payload.Token, payload.ExpiresAtUtc, ct);
+        await _repo.ProjectAsync(payload.InviteId, payload.UserId, payload.DocumentId, payload.Token, payload.ExpiresAtUtc, ct);
     }
 }

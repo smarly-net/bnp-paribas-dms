@@ -13,6 +13,7 @@ public sealed class ReadDbContext : DbContext
     public ReadDbContext(DbContextOptions<ReadDbContext> options) : base(options) { }
 
     public DbSet<DocumentAccessInviteReadEntity> DocumentAccessInvites => Set<DocumentAccessInviteReadEntity>();
+    public DbSet<DocumentAccessUserRequestReadEntity> DocumentAccessUserRequests => Set<DocumentAccessUserRequestReadEntity>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -34,6 +35,50 @@ public sealed class ReadDbContext : DbContext
             e.HasIndex(x => x.DocumentId);
             e.Property(x => x.ExpiresAtUtc);
             e.HasIndex(x => new { x.UserId, x.DocumentId, x.ExpiresAtUtc, x.Token });
+        });
+
+        b.Entity<DocumentAccessUserRequestReadEntity>(e =>
+        {
+            e.ToTable("DocumentAccessUserRequests");
+
+            e.HasKey(x => x.InviteId);
+
+            e.HasOne<DocumentAccessInviteReadEntity>()
+                .WithMany()
+                .HasForeignKey(x => x.InviteId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            e.Property(x => x.UserId).IsRequired();
+            e.Property(x => x.DocumentId).IsRequired();
+
+            e.Property(x => x.DocumentTitle)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            e.Property(x => x.Reason)
+                .HasMaxLength(1000);
+
+            e.Property(x => x.AccessType)
+                .HasConversion<int>()       
+                .IsRequired();
+
+            e.Property(x => x.RequestDate)
+                .IsRequired();
+
+            e.Property(x => x.DecisionStatus)
+                .HasConversion<int>()     
+                .IsRequired();
+
+            e.Property(x => x.DecisionUserId);   
+            e.Property(x => x.DecisionComment)
+                .HasMaxLength(1000);
+            e.Property(x => x.DecisionDate);    
+
+            e.HasIndex(x => x.UserId);
+            e.HasIndex(x => x.DocumentId);
+            e.HasIndex(x => x.DecisionStatus);
+            e.HasIndex(x => new { x.DecisionStatus, x.RequestDate });
+            e.HasIndex(x => new { x.UserId, x.DocumentId });
         });
 
         #endregion

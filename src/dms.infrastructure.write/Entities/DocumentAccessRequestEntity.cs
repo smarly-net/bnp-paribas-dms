@@ -1,10 +1,6 @@
-﻿namespace DMS.Infrastructure.Write.Entities;
+﻿using DMS.Domain.Documents;
 
-public enum DocumentAccessRequestType
-{
-    Read = 1,
-    Edit = 2
-}
+namespace DMS.Infrastructure.Write.Entities;
 
 public class DocumentAccessRequestEntity
 {

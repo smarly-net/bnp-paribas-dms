@@ -53,7 +53,7 @@ public sealed class LoginCommandHandler
         // hashing, verification, and also validate that neither username nor 
         // password is empty.
 
-        var accessToken = _jwtService.Generate(request.Username, user.Roles);
+        var accessToken = _jwtService.Generate(user.Id, request.Username, user.Roles);
         var accessJti = _jwtService.GetJti(accessToken);
 
         var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));

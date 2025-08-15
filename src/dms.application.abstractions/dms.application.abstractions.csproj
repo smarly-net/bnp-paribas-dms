@@ -8,4 +8,8 @@
 	  <RootNamespace>DMS.Application.Abstractions</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\dms.domain\dms.domain.csproj" />
+  </ItemGroup>
+
 </Project>

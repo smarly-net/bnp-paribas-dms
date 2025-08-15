@@ -8,4 +8,8 @@
 		<RootNamespace>DMS.Contracts</RootNamespace>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\dms.domain\dms.domain.csproj" />
+	</ItemGroup>
+
 </Project>

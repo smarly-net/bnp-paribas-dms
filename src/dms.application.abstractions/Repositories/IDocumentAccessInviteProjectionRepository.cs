@@ -2,5 +2,5 @@
 
 public interface IDocumentAccessInviteProjectionRepository
 {
-    Task ProjectAsync(Guid userId, Guid documentId, string token, DateTime expiresAtUtc, CancellationToken ct);
+    Task ProjectAsync(Guid inviteId, Guid userId, Guid documentId, string token, DateTime expiresAtUtc, CancellationToken ct);
 }

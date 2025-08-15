@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,9 +34,8 @@ builderServices
 builderServices.AddTransient<IConfigureOptions<JwtBearerOptions>, JwtBearerOptionsSetup>();
 
 builderServices.AddAuthorization();
-builderServices.AddControllers();
-
-builderServices.AddControllers();
+builderServices.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 var app = builder.Build();
 

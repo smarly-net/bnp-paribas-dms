@@ -1,4 +1,4 @@
-﻿namespace DMS.Contracts.Documents.Invite;
+﻿namespace DMS.Contracts.Documents.IssueAccessInvite;
 
 public sealed record IssueAccessInviteRequestDto(
     Guid UserId,
