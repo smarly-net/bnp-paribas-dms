@@ -74,4 +74,18 @@ public class DocumentAccessUserRequestRepository : IDocumentAccessUserRequestRep
 
         return items;
     }
+
+    public async Task UpdateDecisionAsync(Guid inviteId, Guid decisionUserId, DocumentRequestDecisionStatus status, string? comment, DateTime decidedAtUtc, CancellationToken ct)
+    {
+        var entity = await _db.DocumentAccessUserRequests.FirstOrDefaultAsync(x => x.InviteId == inviteId, ct);
+        if (entity is null)
+            return;
+
+        entity.DecisionUserId = decisionUserId;
+        entity.DecisionStatus = status;
+        entity.DecisionComment = comment;
+        entity.DecisionDate = decidedAtUtc;
+
+        await _db.SaveChangesAsync(ct);
+    }
 }

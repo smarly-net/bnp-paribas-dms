@@ -152,6 +152,11 @@ public sealed class WriteDbContext : DbContext
 
             e.Property(x => x.SubmittedDate);
 
+            e.HasMany(x => x.Decisions)
+                .WithOne(x => x.DocumentAccessRequest)
+                .HasForeignKey(x => x.DocumentAccessRequestId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             e.HasIndex(x => x.UserId);
             e.HasIndex(x => x.DocumentId);
             e.HasIndex(x => new { x.UserId, x.DocumentId });
@@ -173,9 +178,12 @@ public sealed class WriteDbContext : DbContext
             e.Property(x => x.CreatedAtUtc)
                 .IsRequired();
 
-            e.HasOne<DocumentAccessRequestEntity>()
-                .WithMany()
-                .HasForeignKey(x => x.DocumentAccessRequestId);
+            e.Property(x => x.ApproverUserId).IsRequired();
+
+            e.HasOne(x => x.DocumentAccessRequest) 
+                .WithMany(r => r.Decisions)        
+                .HasForeignKey(x => x.DocumentAccessRequestId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             e.HasIndex(x => x.DocumentAccessRequestId);
             e.HasIndex(x => x.DecisionStatus);

@@ -5,7 +5,6 @@ using DMS.Contracts.Common;
 using DMS.Contracts.DocumentAccesses.IssueAccessInvite;
 using DMS.Contracts.DocumentAccesses.List;
 using DMS.Contracts.DocumentAccesses.RequestAccess;
-using DMS.Contracts.Documents.List;
 using DMS.Web.Controllers.Base;
 
 using MediatR;
@@ -14,7 +13,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using System.Security.Claims;
+using DMS.Application.DocumentAccesses.Approve;
 using DMS.Application.DocumentAccesses.Invites;
+using DMS.Contracts.DocumentAccesses.Approve;
 using DMS.Contracts.DocumentAccesses.Invites;
 
 namespace DMS.Web.Controllers
@@ -120,6 +121,23 @@ namespace DMS.Web.Controllers
                 .ToArray();
 
             return Ok(dto);
+        }
+
+        [HttpPost("{inviteId:guid}/approve")]
+        [Authorize(Roles = "approver")]
+        public async Task<IActionResult> Approve(Guid inviteId, [FromBody] ApproveAccessRequestRequestDto dto, CancellationToken ct)
+        {
+            var approverIdStr = User.FindFirstValue("uid");
+            if (string.IsNullOrWhiteSpace(approverIdStr) || !Guid.TryParse(approverIdStr, out var approverId))
+                return Unauthorized(new ErrorDto("Invalid user identity."));
+
+            var result = await _mediator.Send(new ApproveAccessRequestCommand(inviteId, approverId, dto.Status, dto.Comment), ct);
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorDto(result.Error!));
+            }
+
+            return Ok(new { InviteId = result.Data });
         }
     }
 }

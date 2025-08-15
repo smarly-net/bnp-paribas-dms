@@ -9,6 +9,12 @@ public interface IDocumentAccessRequestRepository
     Task<AccessInvite?> GetActiveInviteAsync(Guid userId, Guid documentId, CancellationToken ct);
     Task<AccessInvite?> GetActiveInviteAsync(Guid userId, string token, CancellationToken ct);
 
-    Task<bool> ApplyUserRequestAsync(Guid id, string reason, DocumentAccessRequestType accessType, DateTime submittedDate, 
+    Task<bool> ApplyUserRequestAsync(Guid id, string reason, DocumentAccessRequestType accessType,
+        DateTime submittedDate,
         CancellationToken ct);
+
+    Task<AccessRequestForDecision?> GetForDecisionAsync(Guid inviteId, CancellationToken ct);
+
+    Task ApplyDecisionAsync(Guid inviteId, Guid approverId, DocumentRequestDecisionStatus status, string? comment,
+        DateTime decidedAtUtc, CancellationToken ct);
 }

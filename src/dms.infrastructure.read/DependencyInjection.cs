@@ -22,11 +22,14 @@ public static class DependencyInjection
 
         services.AddScoped<AccessInviteIssuedProjector>();
         services.AddScoped<AccessRequestSubmittedProjector>();
+        services.AddScoped<AccessRequestDecidedProjector>();
+        services.AddScoped<AccessRequestDecidedNotificationProjector>();
 
-        services.AddScoped<Dictionary<string, IProjector>>(sp => new()
+        services.AddScoped<Dictionary<string, IProjector[] >>(sp => new()
         {
-            [nameof(AccessInviteIssuedEvent)] = sp.GetRequiredService<AccessInviteIssuedProjector>(),
-            [nameof(AccessRequestSubmittedEvent)] = sp.GetRequiredService<AccessRequestSubmittedProjector>(),
+            [nameof(AccessInviteIssuedEvent)] = [sp.GetRequiredService<AccessInviteIssuedProjector>()],
+            [nameof(AccessRequestSubmittedEvent)] = [sp.GetRequiredService<AccessRequestSubmittedProjector>()],
+            [nameof(AccessRequestDecidedEvent)] = [sp.GetRequiredService<AccessRequestDecidedProjector>(), sp.GetRequiredService<AccessRequestDecidedNotificationProjector>()],
         });
 
         #region Database

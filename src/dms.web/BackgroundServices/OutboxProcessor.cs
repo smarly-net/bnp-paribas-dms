@@ -24,7 +24,7 @@ public class OutboxProcessor : BackgroundService
         {
             using var scope = _scopeFactory.CreateScope();
             var outbox = scope.ServiceProvider.GetRequiredService<IOutbox>();
-            var projectors = scope.ServiceProvider.GetRequiredService<Dictionary<string, IProjector>>();
+            var projectors = scope.ServiceProvider.GetRequiredService<Dictionary<string, IProjector[]>>();
 
             var items = await outbox.GetPendingAsync(Batch, ct);
             if (items.Count == 0) continue;
@@ -33,9 +33,12 @@ public class OutboxProcessor : BackgroundService
             {
                 try
                 {
-                    if (projectors.TryGetValue(m.Type, out var projector))
+                    if (projectors.TryGetValue(m.Type, out var projectorArray))
                     {
-                        await projector.HandleAsync(m, ct);
+                        foreach (var projector in projectorArray)
+                        {
+                            await projector.HandleAsync(m, ct);
+                        }
                         await outbox.MarkProcessedAsync(m.Id, ct);
                     }
                     else

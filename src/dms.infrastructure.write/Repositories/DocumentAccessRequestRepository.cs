@@ -88,7 +88,52 @@ public sealed class DocumentAccessRequestRepository : IDocumentAccessRequestRepo
         e.AccessType = accessType;
         e.SubmittedDate = submittedDate;
 
+        _db.DocumentRequestDecisions.Add(new
+            DocumentRequestDecisionEntity
+            {
+                Id = Guid.NewGuid(),
+                DocumentAccessRequestId = e.Id,
+                DecisionStatus = DocumentRequestDecisionStatus.Pending,
+                CreatedAtUtc = _dateTimeService.UtcNow,
+            });
+
         return true;
     }
 
+    public async Task<AccessRequestForDecision?> GetForDecisionAsync(Guid inviteId, CancellationToken ct)
+    {
+        var e = await _db.DocumentRequestDecisions
+            .AsNoTracking()
+            .Include(x => x.DocumentAccessRequest)
+            .FirstOrDefaultAsync(x => x.DocumentAccessRequestId == inviteId, ct);
+
+        if (e is null)
+            return null;
+
+        return new AccessRequestForDecision(
+            e.Id,
+            e.DocumentAccessRequest.UserId,
+            e.DocumentAccessRequest.DocumentId,
+            e.DecisionStatus);
+    }
+
+    public async Task ApplyDecisionAsync(Guid inviteId, Guid approverId, DocumentRequestDecisionStatus status, string? comment, DateTime decidedAtUtc, CancellationToken ct)
+    {
+        var e = await _db.DocumentRequestDecisions
+            .FirstOrDefaultAsync(x => x.DocumentAccessRequestId == inviteId, ct);
+
+        if (e is null)
+        {
+            throw new InvalidOperationException($"Access request {inviteId} not found.");
+        }
+
+        e.DocumentAccessRequestId = inviteId;
+        e.DecisionStatus = status;
+        e.ApproverUserId = approverId;
+        e.Comment = comment;
+        e.DecidedAtUtc = decidedAtUtc;
+        e.CreatedAtUtc = _dateTimeService.UtcNow;
+
+        _db.DocumentRequestDecisions.Update(e);
+    }
 }

@@ -12,4 +12,6 @@ public class DocumentAccessRequestEntity
     public string? AccessReason { get; set; }
     public DocumentAccessRequestType? AccessType { get; set; }
     public DateTime? SubmittedDate { get; set; }
+
+    public ICollection<DocumentRequestDecisionEntity> Decisions { get; set; } = new List<DocumentRequestDecisionEntity>();
 }

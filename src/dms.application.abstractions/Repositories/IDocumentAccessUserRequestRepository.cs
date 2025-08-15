@@ -9,4 +9,5 @@ public interface IDocumentAccessUserRequestRepository
         string reason, DocumentAccessRequestType accessType, DateTime requestDate,
         DocumentRequestDecisionStatus decisionStatus, Guid? decisionUserId, string? decisionUserName, string? decisionComment, DateTime? decisionDate, CancellationToken ct);
     Task<IReadOnlyCollection<DocumentAccessItem>> GetAllAsync(Guid? byUserId, CancellationToken ct);
+    Task UpdateDecisionAsync(Guid inviteId, Guid decisionUserId, DocumentRequestDecisionStatus status, string? comment, DateTime decidedAtUtc, CancellationToken ct);
 }
