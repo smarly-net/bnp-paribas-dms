@@ -93,14 +93,37 @@ Returns the list of all users with their IDs and usernames.
 `POST /api/documentaccesses/{documentId}/issue-access-invite`  
 Creates an invite token for a specific user and document.
 
+**Body:**
+```json
+{
+  "userId": "f3a6a2f0-3f4a-4c2f-a2af-52b53b07e72e",
+  "expiresAtUtc": "2025-09-01T12:00:00Z"
+}
+```
+
+---
+
 ### 2) My Invites
 `GET /api/documentaccesses/invites?includeExpired=false`  
 Returns a list of invites for the authenticated user. Admins see all invites.  
 Only the document title is visible when an invite exists.
 
+---
+
 ### 3) Request Access
 `POST /api/documentaccesses/request-access`  
 Uses an invite token to submit an access request with a reason and type.
+
+**Body:**
+```json
+{
+  "token": "INVITE-TOKEN-STRING",
+  "reason": "Need access to review project documentation",
+  "type": 1
+}
+```
+
+---
 
 ### 4) List Requests
 `GET /api/documentaccesses/get-list`  
@@ -108,10 +131,21 @@ Returns access requests based on user role:
 - Admin/Approver — all requests  
 - User — only their own
 
+---
+
 ### 5) Approve/Reject
 `POST /api/documentaccesses/{inviteId}/approve`  
 Approver/Admin sets the decision and optional comment.  
 Triggers a notification event to the user (stub).
+
+**Body:**
+```json
+{
+  "status": 1,
+  "comment": "Approved, valid until end of quarter"
+}
+```
+
 
 ---
 
