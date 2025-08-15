@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using DMS.Application.Abstractions.Repositories;
 using DMS.Application.Abstractions.Persistence.Read;
+using DMS.Application.Abstractions.Services;
 
 namespace DMS.Application.Auth.Login;
 
@@ -19,6 +20,7 @@ public sealed class LoginCommandHandler
     private readonly IRefreshTokenWriteRepository _refreshTokenWriteRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutbox _outbox;
+    private readonly IDateTimeService _dateTimeService;
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
 
@@ -28,12 +30,14 @@ public sealed class LoginCommandHandler
         , IOptions<JwtSettings> jwtSettings
         , IRefreshTokenWriteRepository refreshTokenWriteRepository
         , IUnitOfWork unitOfWork
-        , IOutbox outbox)
+        , IOutbox outbox
+        , IDateTimeService dateTimeService)
     {
         _userRepository = userRepository;
         _refreshTokenWriteRepository = refreshTokenWriteRepository;
         _unitOfWork = unitOfWork;
         _outbox = outbox;
+        _dateTimeService = dateTimeService;
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
     }
@@ -57,7 +61,7 @@ public sealed class LoginCommandHandler
         var accessJti = _jwtService.GetJti(accessToken);
 
         var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-        var expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenDays);
+        var expires = _dateTimeService.UtcNow.AddDays(_jwtSettings.RefreshTokenDays);
 
         await _refreshTokenWriteRepository.Add(new Abstractions.Persistence.Write.RefreshToken(user.Id, refreshToken, expires, accessJti), ct);
         await _unitOfWork.Commit(ct);

@@ -5,6 +5,7 @@ using MediatR;
 
 using System.Security.Cryptography;
 using DMS.Application.Abstractions.Persistence.Write;
+using DMS.Application.Abstractions.Services;
 using DMS.Contracts.Events;
 
 namespace DMS.Application.DocumentAccesses.IssueAccessInvite;
@@ -16,6 +17,7 @@ public sealed class IssueAccessInviteCommandHandler
     private readonly IUserRepository _userRepository;
     private readonly IDocumentAccessRequestRepository _documentAccessRequestRepository;
     private readonly IOutbox _outbox;
+    private readonly IDateTimeService _dateTimeService;
     private readonly IUnitOfWork _unitOfWork;
 
     public IssueAccessInviteCommandHandler(
@@ -23,13 +25,15 @@ public sealed class IssueAccessInviteCommandHandler
         , IUserRepository userRepository
         , IDocumentAccessRequestRepository documentAccessRequestRepository
         , IUnitOfWork unitOfWork
-        , IOutbox outbox)
+        , IOutbox outbox
+        , IDateTimeService dateTimeService)
     {
         _documentRepository = documentRepositoryRepository;
         _userRepository = userRepository;
         _documentAccessRequestRepository = documentAccessRequestRepository;
         _unitOfWork = unitOfWork;
         _outbox = outbox;
+        _dateTimeService = dateTimeService;
     }
 
     public async Task<Result<AccessInvite>> Handle(IssueAccessInviteCommand request, CancellationToken ct)
@@ -55,7 +59,7 @@ public sealed class IssueAccessInviteCommandHandler
 
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 
-        var expriresAtUtc = request.ExpiresAtUtc ?? DateTime.UtcNow.AddDays(7);
+        var expriresAtUtc = request.ExpiresAtUtc ?? _dateTimeService.UtcNow.AddDays(7);
 
         var accessInviteId = await _documentAccessRequestRepository.IssueAccessInvite(new AccessInvite(Guid.Empty, request.UserId, request.DocumentId, token, expriresAtUtc), ct: ct);
         await _outbox.EnqueueAsync(new AccessInviteIssuedEvent(accessInviteId, request.UserId, request.DocumentId, token, expriresAtUtc), ct);

@@ -1,5 +1,6 @@
 ﻿using DMS.Application.Abstractions.Outbox;
 using DMS.Application.Abstractions.Persistence.Write;
+using DMS.Application.Abstractions.Services;
 using DMS.Infrastructure.Write.Entities;
 
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,13 @@ namespace DMS.Infrastructure.Write.Repositories;
 public class OutboxRepository : IOutbox
 {
     private readonly WriteDbContext _db;
-    public OutboxRepository(WriteDbContext db) => _db = db;
+    private readonly IDateTimeService _dateTimeService;
+
+    public OutboxRepository(WriteDbContext db, IDateTimeService dateTimeService)
+    {
+        _db = db;
+        _dateTimeService = dateTimeService;
+    }
 
     public Task EnqueueAsync<T>(T ev, CancellationToken ct)
     {
@@ -19,7 +26,7 @@ public class OutboxRepository : IOutbox
 
     public async Task<IReadOnlyList<OutboxEnvelope>> GetPendingAsync(int take, CancellationToken ct)
     {
-        var now = DateTime.UtcNow;
+        var now = _dateTimeService.UtcNow;
 
         var list = await _db.OutboxMessages
             .Where(x => x.ProcessedAtUtc == null &&
@@ -37,7 +44,7 @@ public class OutboxRepository : IOutbox
         var entity = await _db.OutboxMessages.FirstOrDefaultAsync(x => x.Id == id, ct);
         if (entity is null) return;
 
-        entity.ProcessedAtUtc = DateTime.UtcNow;
+        entity.ProcessedAtUtc = _dateTimeService.UtcNow;
         entity.NextTryUtc = null;
 
         await _db.SaveChangesAsync(ct);
@@ -51,7 +58,7 @@ public class OutboxRepository : IOutbox
 
         e.Attempts++;
         var delay = Math.Min(maxBackoffSec, (int)Math.Pow(2, e.Attempts));
-        e.NextTryUtc = DateTime.UtcNow.AddSeconds(delay);
+        e.NextTryUtc = _dateTimeService.UtcNow.AddSeconds(delay);
 
         await _db.SaveChangesAsync(ct);
         return (e.Attempts, e.NextTryUtc.Value);

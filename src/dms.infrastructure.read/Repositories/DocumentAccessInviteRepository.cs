@@ -1,5 +1,6 @@
 ﻿using DMS.Application.Abstractions.Persistence.Read;
 using DMS.Application.Abstractions.Repositories;
+using DMS.Application.Abstractions.Services;
 using DMS.Infrastructure.Read.Entities;
 
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,13 @@ namespace DMS.Infrastructure.Read.Repositories;
 public sealed class DocumentAccessInviteRepository : IDocumentAccessInviteRepository
 {
     private readonly ReadDbContext _db;
-    public DocumentAccessInviteRepository(ReadDbContext db) => _db = db;
+    private readonly IDateTimeService _dateTimeService;
+
+    public DocumentAccessInviteRepository(ReadDbContext db, IDateTimeService dateTimeService)
+    {
+        _db = db;
+        _dateTimeService = dateTimeService;
+    }
 
     public async Task ProjectAsync(Guid inviteId, Guid userId, Guid documentId, string token, DateTime expiresAtUtc, CancellationToken ct)
     {
@@ -46,7 +53,7 @@ public sealed class DocumentAccessInviteRepository : IDocumentAccessInviteReposi
 
         if (!includeExpired)
         {
-            DateTime now = DateTime.UtcNow;
+            DateTime now = _dateTimeService.UtcNow;
             queryable = queryable.Where(x => x.ExpiresAtUtc > now);
         }
 

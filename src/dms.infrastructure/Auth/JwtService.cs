@@ -7,18 +7,24 @@ using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using DMS.Application.Abstractions.Services;
 
 namespace DMS.Infrastructure.Auth;
 
 public sealed class JwtService : IJwtService
 {
+    private readonly IDateTimeService _dateTimeService;
     private readonly JwtSettings _settings;
 
-    public JwtService(IOptions<JwtSettings> settings) => _settings = settings.Value;
+    public JwtService(IOptions<JwtSettings> settings, IDateTimeService dateTimeService)
+    {
+        _dateTimeService = dateTimeService;
+        _settings = settings.Value;
+    }
 
     public string Generate(Guid userId, string username, IEnumerable<string> roles)
     {
-        var now = DateTime.UtcNow;
+        var now = _dateTimeService.UtcNow;
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, username),
@@ -37,7 +43,7 @@ public sealed class JwtService : IJwtService
         var descriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(_settings.AccessTokenMinutes),
+            Expires = _dateTimeService.UtcNow.AddMinutes(_settings.AccessTokenMinutes),
             Issuer = _settings.Issuer,
             Audience = _settings.Audience,
             SigningCredentials = creds

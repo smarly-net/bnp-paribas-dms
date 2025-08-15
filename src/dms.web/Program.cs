@@ -9,16 +9,17 @@ using DMS.Web.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-
-using System.Text;
 using System.Text.Json.Serialization;
+using DMS.Application.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var builderServices = builder.Services;
 
-builderServices.AddHandlers();
+builderServices
+    .AddApplicationAbstraction()
+    .AddHandlers();
+
 builderServices
     .AddInfrastructure()
     .AddReadInfrastructure(builder.Configuration)

@@ -1,5 +1,6 @@
 ﻿using DMS.Application.Abstractions.Persistence.Write;
 using DMS.Application.Abstractions.Repositories;
+using DMS.Application.Abstractions.Services;
 using DMS.Domain.DocumentAccesses;
 using DMS.Infrastructure.Write.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +10,12 @@ namespace DMS.Infrastructure.Write.Repositories;
 public sealed class DocumentAccessRequestRepository : IDocumentAccessRequestRepository
 {
     private readonly WriteDbContext _db;
+    private readonly IDateTimeService _dateTimeService;
 
-    public DocumentAccessRequestRepository(WriteDbContext db)
+    public DocumentAccessRequestRepository(WriteDbContext db, IDateTimeService dateTimeService)
     {
         _db = db;
+        _dateTimeService = dateTimeService;
     }
 
     public async Task<Guid> IssueAccessInvite(AccessInvite invite, CancellationToken ct)
@@ -33,7 +36,7 @@ public sealed class DocumentAccessRequestRepository : IDocumentAccessRequestRepo
 
     public async Task<AccessInvite?> GetActiveInviteAsync(Guid userId, string token, CancellationToken ct)
     {
-        var now = DateTime.UtcNow;
+        var now = _dateTimeService.UtcNow;
 
         var entity = await _db.Set<DocumentAccessRequestEntity>()
             .AsNoTracking()
@@ -55,7 +58,7 @@ public sealed class DocumentAccessRequestRepository : IDocumentAccessRequestRepo
 
     public async Task<AccessInvite?> GetActiveInviteAsync(Guid userId, Guid documentId, CancellationToken ct)
     {
-        var now = DateTime.UtcNow;
+        var now = _dateTimeService.UtcNow;
 
         var entity = await _db.Set<DocumentAccessRequestEntity>()
             .AsNoTracking()

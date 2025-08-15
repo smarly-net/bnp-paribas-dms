@@ -1,5 +1,6 @@
 ﻿using DMS.Application.Abstractions.Outbox;
 using DMS.Application.Abstractions.Repositories;
+using DMS.Application.Abstractions.Services;
 using DMS.Application.Common;
 using DMS.Contracts.Events;
 
@@ -15,19 +16,22 @@ public sealed class SubmitAccessRequestCommandHandler
     private readonly IDocumentAccessRequestRepository _accessRequestRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOutbox _outbox;
+    private readonly IDateTimeService _dateTimeService;
 
     public SubmitAccessRequestCommandHandler(
         IDocumentRepository documentRepository
         , IUserRepository userRepository
         , IDocumentAccessRequestRepository accessRequestRepository
         , IUnitOfWork unitOfWork
-        , IOutbox outbox)
+        , IOutbox outbox
+        , IDateTimeService dateTimeService)
     {
         _documentRepository = documentRepository;
         _userRepository = userRepository;
         _accessRequestRepository = accessRequestRepository;
         _unitOfWork = unitOfWork;
         _outbox = outbox;
+        _dateTimeService = dateTimeService;
     }
 
     public async Task<Result<Guid>> Handle(SubmitAccessRequestCommand request, CancellationToken ct)
@@ -50,7 +54,7 @@ public sealed class SubmitAccessRequestCommandHandler
             return Result<Guid>.Fail("Document not found.");
         }
 
-        var submittedDate = DateTime.UtcNow;
+        var submittedDate = _dateTimeService.UtcNow;
 
         var resultOfApplying = await _accessRequestRepository.ApplyUserRequestAsync(invite.Id, request.Reason, request.AccessType, submittedDate, ct);
 
