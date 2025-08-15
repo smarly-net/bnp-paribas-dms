@@ -39,7 +39,7 @@ public sealed class DocumentAccessRequestRepository : IDocumentAccessRequestRepo
             .AsNoTracking()
             .Where(x => x.UserId == userId
                         && x.RequestToken == token
-                        && x.ExpiredAt > now) 
+                        && (x.ExpiredAt > now || x.AccessType != null)) 
             .OrderByDescending(x => x.ExpiredAt)
             .FirstOrDefaultAsync(ct);
 
