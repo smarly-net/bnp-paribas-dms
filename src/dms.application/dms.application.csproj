@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<RootNamespace>DMS.Application</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MediatR" Version="13.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\dms.application.abstractions\dms.application.abstractions.csproj" />
+	  <ProjectReference Include="..\dms.contracts\dms.contracts.csproj" />
+	  <ProjectReference Include="..\dms.domain\dms.domain.csproj" />
+	</ItemGroup>
+
+</Project>
