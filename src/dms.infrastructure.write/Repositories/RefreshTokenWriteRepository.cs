@@ -11,7 +11,7 @@ public sealed class RefreshTokenWriteRepository : IRefreshTokenWriteRepository
     private readonly WriteDbContext _db;
     public RefreshTokenWriteRepository(WriteDbContext db) => _db = db;
 
-    public Task Add(RefreshToken token, CancellationToken ct)
+    public Task AddAsync(RefreshToken token, CancellationToken ct)
     {
         var entity = new RefreshTokenEntity
         {

@@ -63,7 +63,7 @@ public sealed class LoginCommandHandler
         var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         var expires = _dateTimeService.UtcNow.AddDays(_jwtSettings.RefreshTokenDays);
 
-        await _refreshTokenWriteRepository.Add(new Abstractions.Persistence.Write.RefreshToken(user.Id, refreshToken, expires, accessJti), ct);
+        await _refreshTokenWriteRepository.AddAsync(new Abstractions.Persistence.Write.RefreshToken(user.Id, refreshToken, expires, accessJti), ct);
         await _unitOfWork.Commit(ct);
 
         return Result<LoginToken>.Ok(new LoginToken(accessToken, refreshToken));

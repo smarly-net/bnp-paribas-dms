@@ -5,7 +5,7 @@ namespace DMS.Application.Abstractions.Repositories;
 
 public interface IDocumentAccessRequestRepository
 {
-    Task<Guid> IssueAccessInvite(AccessInvite invite, CancellationToken ct);
+    Task<Guid> IssueAccessInviteAsync(AccessInvite invite, CancellationToken ct);
     Task<AccessInvite?> GetActiveInviteAsync(Guid userId, Guid documentId, CancellationToken ct);
     Task<AccessInvite?> GetActiveInviteAsync(Guid userId, string token, CancellationToken ct);
 

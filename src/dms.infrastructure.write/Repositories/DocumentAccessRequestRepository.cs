@@ -18,7 +18,7 @@ public sealed class DocumentAccessRequestRepository : IDocumentAccessRequestRepo
         _dateTimeService = dateTimeService;
     }
 
-    public async Task<Guid> IssueAccessInvite(AccessInvite invite, CancellationToken ct)
+    public async Task<Guid> IssueAccessInviteAsync(AccessInvite invite, CancellationToken ct)
     {
         var entity = new DocumentAccessRequestEntity
         {

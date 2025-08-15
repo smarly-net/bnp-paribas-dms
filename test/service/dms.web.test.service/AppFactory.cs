@@ -62,6 +62,8 @@ namespace DMS.Web.Test.Service
 
                 services.RemoveAll<IOutbox>();
                 services.AddSingleton<IOutbox, ImmediateOutbox>();
+
+                services.AddSingleton<IProjector, NoopProjector>();
             });
         }
 

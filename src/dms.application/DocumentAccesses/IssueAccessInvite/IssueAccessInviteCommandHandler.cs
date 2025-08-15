@@ -61,7 +61,7 @@ public sealed class IssueAccessInviteCommandHandler
 
         var expriresAtUtc = request.ExpiresAtUtc ?? _dateTimeService.UtcNow.AddDays(7);
 
-        var accessInviteId = await _documentAccessRequestRepository.IssueAccessInvite(new AccessInvite(Guid.Empty, request.UserId, request.DocumentId, token, expriresAtUtc), ct: ct);
+        var accessInviteId = await _documentAccessRequestRepository.IssueAccessInviteAsync(new AccessInvite(Guid.Empty, request.UserId, request.DocumentId, token, expriresAtUtc), ct: ct);
         await _outbox.EnqueueAsync(new AccessInviteIssuedEvent(accessInviteId, request.UserId, request.DocumentId, token, expriresAtUtc), ct);
 
         await _unitOfWork.Commit(ct);
